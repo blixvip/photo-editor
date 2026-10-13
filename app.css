@@ -53,6 +53,11 @@ header {
 }
 .chip:hover { background: var(--panel3); color: var(--txt); }
 .chip[aria-pressed="true"] { background: var(--selbg); border-color: var(--line2); color: var(--txt); }
+/* In the side panel a chip is a button among sliders: without a surface "Erase (E)", "Clear brush" or "Full photo"
+   read as plain labels. The top bar keeps its flat chips. */
+#panel .chip { background: var(--panel2); border-color: var(--line); color: var(--txt); text-align: center; }
+#panel .chip:hover { background: var(--panel3); border-color: var(--line2); }
+#panel .chip[aria-pressed="true"] { background: var(--selbg); border-color: #5a5a5a; }
 
 .iconbtn {
   width: 28px; height: 28px; border-radius: 4px; display: grid; place-items: center;
@@ -231,7 +236,7 @@ label.ck input { accent-color: #6d6d6d; }
 }
 .aurac b {
   position: absolute; bottom: 3px; left: 0; right: 0; text-align: center;
-  font: 500 9px/1 "Segoe UI", system-ui, sans-serif; color: var(--dim2);
+  font: 500 10px/1 "Segoe UI", system-ui, sans-serif; color: var(--dim); text-shadow: 0 1px 2px #000; /* was --dim2 at 9px: unreadable on the tile */
 }
 .aurac:hover { border-color: #5f5f5f; }
 .aurac:hover b { color: var(--txt); }

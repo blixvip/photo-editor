@@ -191,7 +191,7 @@ async function savePack() {
       }),
     }).then(r => r.json());
     btn.textContent = 'saved -> ' + r.dir.split('\\').pop();
-    fetch('/api/reveal?dir=' + encodeURIComponent(r.dir));
+    fetch('/api/reveal?dir=' + encodeURIComponent(r.dir)).catch(() => {});
   } catch (e) {
     btn.textContent = 'save failed';
   }

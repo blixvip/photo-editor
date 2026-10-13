@@ -760,7 +760,13 @@ async function savePack() {
   busy(null);
   if (res.error) throw new Error(res.error);
   toast(`${files.length} files → out/${res.dir.split(/[\\/]/).pop()}`);
-  fetch('/api/reveal?dir=' + encodeURIComponent(res.dir)).catch(() => {});
+  reveal(res.dir);
+}
+
+/** Open a saved folder in Explorer. Not under the test harness (window.__mfTest): every pack test popped a window. */
+function reveal(dir) {
+  if (window.__mfTest) return;
+  fetch('/api/reveal?dir=' + encodeURIComponent(dir)).catch(() => {});
 }
 
 /** Same files, straight to the browser's download folder. */
@@ -798,7 +804,7 @@ async function saveToDisk() {
     body: JSON.stringify({ slug: 'edit', files: [{ name: `image.${ext}`, data }], meta: { w: c.width, h: c.height, bg: doc.bg.id } }),
   }).then(r => r.json());
   toast('Saved to out/' + res.dir.split(/[\\/]/).pop());
-  fetch('/api/reveal?dir=' + encodeURIComponent(res.dir)).catch(() => {});
+  reveal(res.dir);
 }
 
 $('#copyBtn').onclick = copyOut;
@@ -1040,7 +1046,7 @@ const PANELS = {
             class: 'chip', 'aria-pressed': doc.bg.kind === 'solid',
             onclick: () => setBackdrop({ kind: 'solid', color: doc.bg.color || '#2a2a2a' }),
           }, 'Solid'),
-          el('button', { class: 'chip', onclick: () => $('#bgFile').click() }, 'Image…')),
+          el('button', { class: 'chip', 'aria-pressed': doc.bg.kind === 'image', title: 'Use your own picture as the backdrop', onclick: () => $('#bgFile').click() }, 'Image…')),
         doc.bg.kind === 'solid'
           ? el('div', { style: 'margin-top:8px' }, colorRow('Background colour', () => doc.bg.color, (v) => { doc.bg.color = v; invalidate(); }))
           : null),
@@ -1287,11 +1293,23 @@ const PANELS = {
 const tileCache = new Map();
 function tile(key, w, h, draw) {
   let c = tileCache.get(key);
-  if (c) return c;
+  // A cached tile whose draw has not run yet is queued again: every panel rebuild empties the queue (syncPanel), so
+  // a tile created by one rebuild and reused by the next was never drawn. That left every Looks and launch-pack
+  // preview blank after a photo was dropped (the cutout landing rebuilds the panel straight away).
+  if (c) { if (!c._drawn && c._job) thumbQueue.push(c._job); return c; }
   c = el('canvas', { width: w, height: h });
   tileCache.set(key, c);
   if (tileCache.size > 90) tileCache.delete(tileCache.keys().next().value);
-  thumbQueue.push(() => { try { draw(c); } catch { /* a preview is never worth a crash */ } });
+  // A draw that throws (the layer mid-change) is tried again on the same canvas a moment later.
+  let tries = 0;
+  c._job = () => {
+    if (c._drawn) return;
+    try { draw(c); c._drawn = true; }
+    catch {
+      if (++tries < 25) setTimeout(() => { if (!c._drawn) { thumbQueue.push(c._job); runThumbs(); } }, 200);
+    }
+  };
+  thumbQueue.push(c._job);
   return c;
 }
 
@@ -1359,6 +1377,7 @@ $('#bgFile').addEventListener('change', async (e) => {
 });
 
 function setTool(name, quiet = false) {
+  if (!PANELS[name]) return;   // an unknown name used to blank the panel with a TypeError
   S.tool = name;
   document.querySelectorAll('.tool').forEach(b => b.setAttribute('aria-pressed', b.dataset.tool === name));
   if (!quiet && name !== 'cut') setPaintQuiet(null);

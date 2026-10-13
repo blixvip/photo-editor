@@ -276,16 +276,16 @@ console.log('download');
 
 console.log('save pack from the UI');
 {
-  const before = fs.readdirSync('C:/Users/kaiha/memeforge/out');
+  const before = fs.readdirSync(path.join(SCRATCH, '..', 'out'));
   await S.evaluate(`(() => { document.querySelector('#ticker').value = 'UITEST';
     document.querySelector('#ticker').dispatchEvent(new Event('input', { bubbles: true })); return true; })()`);
   await sleep(300);
   await S.evaluate(`document.querySelector('#save').click()`);
   await sleep(4500);
-  const after = fs.readdirSync('C:/Users/kaiha/memeforge/out').filter(d => !before.includes(d));
+  const after = fs.readdirSync(path.join(SCRATCH, '..', 'out')).filter(d => !before.includes(d));
   ok(after.length === 1, 'save creates exactly one pack folder', after.join(','));
   if (after.length) {
-    const dir = path.join('C:/Users/kaiha/memeforge/out', after[0]);
+    const dir = path.join(path.join(SCRATCH, '..', 'out'), after[0]);
     const files = fs.readdirSync(dir);
     const want = ['logo-1000.png', 'pfp-512.png', 'pfp-400.png', 'icon-128.png', 'og-1200x630.png',
       'banner-1500x500.png', 'logo-1000-alpha.png', 'meta.json'];

@@ -2,7 +2,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 const B = 'http://localhost:4477';
-const OUT = 'C:/Users/kaiha/memeforge/out';
+const ROOT = path.resolve(import.meta.dirname, '..');
+const OUT = path.join(ROOT, 'out');
 const fails = [];
 const ok = (cond, label, detail = '') => {
   console.log((cond ? '  ok   ' : '  FAIL ') + label + (detail ? '  [' + detail + ']' : ''));
@@ -98,8 +99,8 @@ const px = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAA
 ok((await get('/api/save')).status === 404, 'GET /api/save is not a save');
 
 console.log('reveal containment');
-for (const d of ['C:/Users/kaiha', 'C:/Users/kaiha/memeforge', 'C:/Users/kaiha/memeforge/outside',
-  'C:/Users/kaiha/memeforge/out/../..', 'C:/Windows']) {
+for (const d of [path.dirname(ROOT), ROOT, path.join(ROOT, 'outside'),
+  path.join(ROOT, 'out') + '/../..', 'C:/Windows']) {
   const r = await get('/api/reveal?dir=' + encodeURIComponent(d));
   ok(r.status === 400, 'reveal rejects ' + d, 'status ' + r.status);
 }

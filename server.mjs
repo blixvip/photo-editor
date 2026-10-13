@@ -180,7 +180,7 @@ function wordCloud(rows) {
 // ---- disk -------------------------------------------------------------------
 async function savePack(body) {
   const slug = String(body.slug || 'coin').toLowerCase().replace(/[^a-z0-9._-]+/g, '-')
-    .replace(/\.{2,}/g, '.').replace(/^[-.]+|[-.]+$/g, '').slice(0, 48) || 'coin';
+    .replace(/[-.]*-[-.]*|\.{2,}/g, (m) => (m.includes('-') ? '-' : '.')).replace(/^[-.]+|[-.]+$/g, '').slice(0, 48) || 'coin';
   const d = new Date();
   const p2 = n => String(n).padStart(2, '0');
   const stamp = '' + d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()) + '-' + p2(d.getHours()) + p2(d.getMinutes()) + p2(d.getSeconds());
@@ -188,7 +188,7 @@ async function savePack(body) {
   await fs.mkdir(dir, { recursive: true });
   const written = [];
   for (const f of body.files || []) {
-    const name = path.basename(String(f.name || 'image.png')).replace(/[^A-Za-z0-9._-]+/g, '_');
+    const name = path.basename(String(f.name || 'image.png')).replace(/[^A-Za-z0-9._-]+/g, '_').replace(/^\.+/, '') || 'image.png';
     await fs.writeFile(path.join(dir, name), Buffer.from(String(f.data).split(',').pop(), 'base64'));
     written.push(name);
   }
@@ -203,6 +203,13 @@ const server = http.createServer(async (req, res) => {
     res.end(data);
   };
   const json = (code, obj) => send(code, 'application/json; charset=utf-8', JSON.stringify(obj));
+  // Only this app may use it. A Host other than localhost is a DNS-rebinding page; an /api call another site
+  // triggered (Sec-Fetch-Site cross-site / same-site: any other localhost port is "same-site") could write files into
+  // out/ or open Explorer windows. The editor's own calls are same-origin; a typed URL or curl sends none.
+  const host = String(req.headers.host || '').toLowerCase();
+  if (!/^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(host)) return send(403, 'text/plain', 'bad host');
+  const site = req.headers['sec-fetch-site'];
+  if (u.pathname.startsWith('/api/') && site && site !== 'same-origin' && site !== 'none') return json(403, { error: 'cross-site request' });
   try {
     if (u.pathname === '/api/trends') return json(200, await cached('trends', 60000, trends));
 
