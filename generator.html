@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MemeForge Generator</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🪙</text></svg>">
+</head>
+<body>
+
+<header>
+  <h1>MemeForge</h1>
+  <div class="keys">
+    <kbd>/</kbd> ticker <kbd>space</kbd> reroll <kbd>1-0</kbd> style <kbd>p</kbd> palette
+    <kbd>s</kbd> save pack <kbd>d</kbd> download <kbd>r</kbd> research
+  </div>
+  <button id="researchToggle" class="btn ghost">Research <kbd>r</kbd></button>
+</header>
+
+<section id="research" hidden>
+  <div class="rtop">
+    <strong>Live launch meta</strong>
+    <span id="rstatus" class="muted"></span>
+    <span id="rcount" class="muted"></span>
+    <input id="rq" placeholder="filter name / symbol / text">
+    <select id="rchain"><option value="all">all chains</option></select>
+    <button id="rrefresh" class="btn ghost sm">refresh</button>
+  </div>
+
+  <div class="rgrid">
+    <div class="rcol">
+      <h3>Meta words <em>recurring across what is being promoted right now &mdash; click one to build names from it</em></h3>
+      <div id="words" class="words"></div>
+      <h3>Broad trending <em>coingecko</em></h3>
+      <div id="broad" class="broad"></div>
+    </div>
+    <div class="rcol">
+      <h3>Name lab <em>live availability on dex</em> <button id="reroll" class="btn ghost sm">reroll</button></h3>
+      <div id="ideas" class="ideas"></div>
+    </div>
+  </div>
+
+  <h3 class="feedh">Launch feed <em>paid boosts + fresh profiles, ranked by heat (promotion + volume/liquidity + freshness)</em></h3>
+  <div id="feed" class="feed"></div>
+</section>
+
+<main>
+  <aside>
+    <label class="f">
+      <span>Ticker</span>
+      <input id="ticker" maxlength="14" autocomplete="off" spellcheck="false">
+    </label>
+    <div id="avail" class="avail"></div>
+
+    <label class="f"><span>Name</span><input id="name" maxlength="40" autocomplete="off"></label>
+    <label class="f"><span>Tagline</span><input id="tagline" maxlength="48" autocomplete="off"></label>
+
+    <label class="f"><span>Emoji / symbol</span><input id="emoji" maxlength="4" autocomplete="off" placeholder="optional"></label>
+    <div class="emrow">
+      <button class="em">🐶</button><button class="em">🐸</button><button class="em">🐱</button><button class="em">🤡</button>
+      <button class="em">🧢</button><button class="em">💀</button><button class="em">🚀</button><button class="em">🔥</button>
+      <button class="em">👑</button><button class="em">🧠</button><button class="em">🪙</button><button class="em">🦍</button>
+      <button class="em">😹</button><button class="em">🥩</button><button class="em">🛸</button><button class="em">🫡</button>
+    </div>
+
+    <div class="drop">
+      <input type="file" id="file" accept="image/*" hidden>
+      <button class="dropbtn" onclick="document.getElementById('file').click()">
+        <span id="dropHint">drop image / paste</span>
+      </button>
+      <button id="clearImg" class="mini" hidden>clear</button>
+    </div>
+    <label class="cb"><input type="checkbox" id="cut" checked> cut out flat background <i id="cutNote"></i></label>
+    <label class="cb"><input type="checkbox" id="alpha"> transparent background</label>
+
+    <h3>Palette <kbd>p</kbd></h3>
+    <div id="palettes" class="palettes"></div>
+
+    <div class="actions">
+      <button id="roll" class="btn">Reroll <kbd>space</kbd></button>
+      <button id="save" class="btn primary">Save pack <kbd>s</kbd></button>
+      <button id="dl" class="btn ghost">Download this <kbd>d</kbd></button>
+    </div>
+    <p class="muted sm">pack = 1000 / 512 / 400 / 128 logo, OG card, X banner, transparent &rarr; <code>memeforge/out/<span id="packName"></span></code></p>
+  </aside>
+
+  <div class="stage">
+    <div class="stagetop">
+      <select id="sizeSel">
+        <option value="logo-1000.png">1000 x 1000 &middot; logo</option>
+        <option value="pfp-512.png">512 x 512 &middot; pfp</option>
+        <option value="pfp-400.png">400 x 400 &middot; pfp</option>
+        <option value="icon-128.png">128 x 128 &middot; icon</option>
+        <option value="og-1200x630.png">1200 x 630 &middot; og card</option>
+        <option value="banner-1500x500.png">1500 x 500 &middot; x banner</option>
+        <option value="logo-1000-alpha.png">1000 x 1000 &middot; transparent</option>
+      </select>
+      <span id="bigMeta" class="muted"></span>
+    </div>
+    <canvas id="big" width="1000" height="1000"></canvas>
+    <div id="grid" class="grid"></div>
+  </div>
+</main>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+node_modules/
+
+# Third-party runtime binaries, fetched by setup.mjs (~106MB)
+vendor/
+models/
+
+# Generated output and test artefacts
+out/
+test/out-*/
+test/cdp-*/
+test/downloads/
+test/fixtures/
