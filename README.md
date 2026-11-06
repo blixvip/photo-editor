@@ -240,6 +240,12 @@ test\run.cmd
 - DexScreener and CoinGecko are used as keyless public endpoints by the research
   panel in `generator.html`.
 
+## Contributors
+
+Thank you to everyone who has helped make MemeForge better. Want to join them? Read [CONTRIBUTING.md](CONTRIBUTING.md) and pick one of the [good first issues](https://github.com/blixvip/photo-editor/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+
+<a href="https://github.com/blixvip/photo-editor/graphs/contributors"><img src="https://contrib.rocks/image?repo=blixvip/photo-editor" alt="Contributors" /></a>
+
 ## License
 
 [MIT](LICENSE) © 2026 blixvip, for this project's own code. Fonts and downloaded models keep their own licenses — see [THIRD_PARTY.md](THIRD_PARTY.md).
