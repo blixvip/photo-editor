@@ -240,6 +240,10 @@ test\run.cmd
 - DexScreener and CoinGecko are used as keyless public endpoints by the research
   panel in `generator.html`.
 
+## License
+
+[MIT](LICENSE) © 2026 blixvip, for this project's own code. Fonts and downloaded models keep their own licenses — see [THIRD_PARTY.md](THIRD_PARTY.md).
+
 ## Layout
 
 ```
