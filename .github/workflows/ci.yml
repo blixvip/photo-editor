@@ -1,0 +1,56 @@
+name: CI
+
+# Offline checks only. The full suite (test/t-*.mjs) needs Chrome plus ~106MB of
+# models from setup.mjs, and test/t2-server.mjs calls DexScreener/CoinGecko, so
+# those still run locally (see CONTRIBUTING.md).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Syntax check every script
+        run: |
+          set -e
+          for f in $(git ls-files '*.js' '*.mjs'); do
+            node --check "$f"
+          done
+          echo "checked $(git ls-files '*.js' '*.mjs' | wc -l) files"
+
+      - name: Server boots and serves the editor
+        run: |
+          set -e
+          node server.mjs > server.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf -o /dev/null http://localhost:4477/ && break; sleep 0.5; done
+          code() { curl -s -o /dev/null -w '%{http_code}' "http://localhost:4477$1"; }
+          ctype() { curl -s -o /dev/null -w '%{content_type}' "http://localhost:4477$1"; }
+          fail=0
+          expect() { if [ "$2" = "$3" ]; then echo "ok   $1"; else echo "FAIL $1 (got $2, want $3)"; fail=1; fi; }
+          expect 'GET / is 200'                 "$(code /)" 200
+          expect 'index is text/html'           "$(ctype / | cut -d';' -f1)" text/html
+          expect 'js/ui.js is javascript'       "$(ctype /js/ui.js | grep -o javascript)" javascript
+          expect 'generator.html is 200'        "$(code /generator.html)" 200
+          expect 'missing file is 404'          "$(code /nope.js)" 404
+          t=$(code '/..%2f..%2fetc/passwd'); [ "$t" = 403 ] || [ "$t" = 404 ] && t=blocked
+          expect 'path traversal blocked'       "$t" blocked
+          expect 'reveal outside out/ is 400'   "$(code '/api/reveal?dir=%2Fetc')" 400
+          expect 'server still alive'           "$(code /)" 200
+          if [ $fail -ne 0 ]; then cat server.log; exit 1; fi
