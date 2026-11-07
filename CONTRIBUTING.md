@@ -1,6 +1,8 @@
 # Contributing to MemeForge
 
-Thanks for helping! Questions and ideas are welcome in the **[Discord](https://discord.gg/zEB4VjmfSb)**. Bugs go in [GitHub issues](https://github.com/blixvip/photo-editor/issues/new).
+> 💬 **Before you open a PR, join the [blix open source Discord](https://discord.gg/wJfHQXfEMM).** It's the home for contributors across every blixvip repo: ask questions, run ideas by us, and talk through your PR.
+
+Thanks for helping! Questions and ideas are welcome in the **[Discord](https://discord.gg/wJfHQXfEMM)**. Bugs go in [GitHub issues](https://github.com/blixvip/photo-editor/issues/new).
 
 ## Finding something to work on
 
@@ -60,4 +62,4 @@ node test/t-editor.mjs      # cutout, brush, wand, undo, export (end to end)
 - `generator.html`, `app.js`, `gfx.js`, `templates.js`, `research.js`, `style.css`: the original template generator. `test/t1-*`/`t2-*`/`t3-*` cover it.
 - `test/cdp.mjs`: the shared headless-Chrome harness. Every `test/t-*.mjs` uses it, and each exposes the app through `window.MF`.
 
-Made something with it? Show it off in the [Discord](https://discord.gg/zEB4VjmfSb).
+Made something with it? Show it off in the [Discord](https://discord.gg/wJfHQXfEMM).

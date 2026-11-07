@@ -246,6 +246,12 @@ Thank you to everyone who has helped make MemeForge better. Want to join them? R
 
 <a href="https://github.com/blixvip/photo-editor/graphs/contributors"><img src="https://contrib.rocks/image?repo=blixvip/photo-editor" alt="Contributors" /></a>
 
+## Community and contributing
+
+[![Join the contributor Discord](https://img.shields.io/badge/Discord-Join%20the%20open%20source%20community-5865F2?logo=discord&logoColor=white)](https://discord.gg/wJfHQXfEMM)
+
+**Want to send a PR? Join the [blix open source Discord](https://discord.gg/wJfHQXfEMM) first.** It's the one server for everyone contributing to any blixvip repo: questions, ideas, PR discussion, help, and release news.
+
 ## License
 
 [MIT](LICENSE) © 2026 blixvip, for this project's own code. Fonts and downloaded models keep their own licenses — see [THIRD_PARTY.md](THIRD_PARTY.md).
